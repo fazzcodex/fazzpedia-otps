@@ -495,3 +495,5 @@ app.get('/api/deposits', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 NokOS Server running at http://localhost:${PORT}`);
 });
+
+module.exports = app;
