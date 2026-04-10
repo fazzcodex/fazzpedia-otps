@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NokOS - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS sama seperti sebelumnya (light blue theme) */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --bg-body: #f0f9ff;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-container { max-width: 480px; width: 100%; margin: 0 auto; }
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 32px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: fadeInUp 0.4s ease-out;
+        }
+        .login-header {
+            background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+            padding: 32px 24px;
+            text-align: center;
+            color: white;
+        }
+        .logo { font-size: 2.5rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
+        .logo i { font-size: 2.8rem; }
+        .login-header h2 { font-size: 1.4rem; font-weight: 500; margin-top: 8px; opacity: 0.95; }
+        .login-body { padding: 32px 28px; }
+        .method-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+        .method-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: 0.2s;
+            color: var(--text-secondary);
+        }
+        .method-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        .method-panel { display: none; }
+        .method-panel.active { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .info-text { text-align: center; margin-bottom: 28px; color: var(--text-secondary); font-size: 0.9rem; }
+        .form-group { margin-bottom: 24px; }
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            padding: 4px 16px;
+            background: white;
+            transition: all 0.2s;
+        }
+        .input-group:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .input-group i { color: var(--text-secondary); margin-right: 10px; }
+        .input-group input { flex: 1; border: none; padding: 14px 0; font-size: 1rem; font-family: inherit; background: transparent; outline: none; }
+        .btn-login {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-login:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .error-message {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .help-text { text-align: center; margin-top: 24px; font-size: 0.75rem; color: var(--text-secondary); border-top: 1px solid var(--border); padding-top: 20px; }
+        .help-text a { color: var(--primary); text-decoration: none; font-weight: 500; }
+        @media (max-width: 480px) { .login-body { padding: 24px 20px; } }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>NokOS</span>
+                </div>
+                <h2>Auto Order OTP Professional</h2>
+            </div>
+            <div class="login-body">
+                <!-- Tab Pilihan Metode -->
+                <div class="method-tabs">
+                    <div class="method-tab active" data-method="telegram">📱 Telegram ID</div>
+                    <div class="method-tab" data-method="email">✉️ Email</div>
+                </div>
+
+                <!-- Panel Login Telegram -->
+                <div id="telegram-panel" class="method-panel active">
+                    <% if (step === 'otp') { %>
+                        <div class="info-text">Kode OTP telah dikirim ke Telegram ID <strong><%= telegramId %></strong>.</div>
+                        <% if (error && method === 'telegram') { %>
+                            <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+                        <% } %>
+                        <form action="/verify-otp" method="POST">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <i class="fas fa-key"></i>
+                                    <input type="text" name="otp" placeholder="6-digit OTP" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-login"><i class="fas fa-check-circle"></i> Verifikasi</button>
+                        </form>
+                    <% } else { %>
+                        <div class="info-text">Masukkan Telegram ID Anda yang telah terdaftar di bot @NokOSBot.</div>
+                        <% if (error && method === 'telegram') { %>
+                            <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+                        <% } %>
+                        <form action="/send-otp" method="POST">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <i class="fab fa-telegram"></i>
+                                    <input type="text" name="telegramId" placeholder="Telegram ID (angka)" value="<%= telegramId %>" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-login"><i class="fas fa-paper-plane"></i> Kirim OTP</button>
+                        </form>
+                    <% } %>
+                </div>
+
+                <!-- Panel Login Email (diperbaiki) -->
+                <div id="email-panel" class="method-panel">
+                    <% if (step === 'verify-email') { %>
+                        <div class="info-text">Kode OTP telah dikirim ke <strong><%= email %></strong>.</div>
+                        <% if (error && method === 'email') { %>
+                            <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+                        <% } %>
+                        <form action="/verify-email-otp" method="POST">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <i class="fas fa-key"></i>
+                                    <input type="text" name="otp" placeholder="6-digit OTP" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-login"><i class="fas fa-check-circle"></i> Verifikasi</button>
+                        </form>
+                    <% } else { %>
+                        <div class="info-text">Masukkan alamat email Anda untuk menerima kode OTP.</div>
+                        <% if (error && method === 'email') { %>
+                            <div class="error-message"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+                        <% } %>
+                        <form action="/send-email-otp" method="POST">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="email" name="email" placeholder="Email Anda" value="<%= email %>" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-login"><i class="fas fa-paper-plane"></i> Kirim OTP</button>
+                        </form>
+                    <% } %>
+                </div>
+
+                <div class="help-text">
+                    <i class="fas fa-shield-alt"></i> Aman & Terpercaya | <a href="https://t.me/NokOSBot" target="_blank">Hubungi Bot</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        const tabs = document.querySelectorAll('.method-tab');
+        const panels = {
+            telegram: document.getElementById('telegram-panel'),
+            email: document.getElementById('email-panel')
+        };
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const method = tab.dataset.method;
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                Object.values(panels).forEach(p => p.classList.remove('active'));
+                panels[method].classList.add('active');
+            });
+        });
+        // Jika ada error dari server dengan method tertentu, aktifkan tab yang sesuai
+        const activeMethod = '<%= method %>';
+        if (activeMethod === 'email') {
+            document.querySelector('.method-tab[data-method="email"]').click();
+        } else if (activeMethod === 'telegram') {
+            document.querySelector('.method-tab[data-method="telegram"]').click();
+        }
+    </script>
+</body>
+</html>

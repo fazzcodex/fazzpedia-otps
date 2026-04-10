@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FazzPedia - Otps - Auto Order OTP Professional</title>
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>FazzPedia - Otps</span>
+                </div>
+                <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sidebar-user">
+                <div class="avatar"><i class="fas fa-user-circle"></i></div>
+                <div class="user-details">
+                    <div class="user-id">ID: <%= user.id %></div>
+                    <div class="user-balance" id="sidebarBalance">Rp <%= user.balance.toLocaleString() %></div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active" data-page="home"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+                <a href="#" class="nav-link" data-page="order"><i class="fas fa-shopping-cart"></i> <span>Order</span></a>
+                <a href="#" class="nav-link" data-page="history"><i class="fas fa-history"></i> <span>Riwayat</span></a>
+                <a href="#" class="nav-link" data-page="stats"><i class="fas fa-chart-line"></i> <span>Statistik</span></a>
+                <a href="#" class="nav-link" data-page="deposit"><i class="fas fa-wallet"></i> <span>Deposit</span></a>
+                <a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog"></i> <span>Pengaturan</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Top Bar (mobile hamburger) -->
+            <div class="top-bar">
+                <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+                <div class="top-bar-title">FazzPedia - Otps</div>
+                <div class="top-bar-actions">
+                    <span class="balance-badge" id="topBalance">Rp <%= user.balance.toLocaleString() %></span>
+                </div>
+            </div>
+
+            <div class="container">
+                <!-- Page: Home -->
+                <div class="page active" id="home-page">
+                    <div class="page-header">
+                        <h1>Dashboard</h1>
+                        <p>Selamat datang kembali, <strong><%= user.id %></strong></p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                            <div class="stat-info">
+                                <h3>Saldo Saat Ini</h3>
+                                <p id="homeBalance">Rp <%= user.balance.toLocaleString() %></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Belanja</h3>
+                                <p id="homeSpent">Rp <%= totalSpent.toLocaleString() %></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="stat-info">
+                                <h3>Member Sejak</h3>
+                                <p><%= new Date(user.created_at).toLocaleDateString('id-ID') %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="quickOrderBtn"><i class="fas fa-shopping-cart"></i> Order Sekarang</button>
+                        <button class="btn btn-outline" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <a href="https://t.me/NokOSBot" target="_blank" class="btn btn-outline"><i class="fab fa-telegram"></i> Buka Bot</a>
+                    </div>
+                </div>
+
+                <!-- Page: Order -->
+                <div class="page" id="order-page">
+                    <div class="page-header">
+                        <h1>Order Nomor Virtual</h1>
+                        <p>Pilih layanan, negara, dan operator untuk mendapatkan nomor</p>
+                    </div>
+                    <div class="card">
+                        <form id="orderForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-mobile-alt"></i> Layanan</label>
+                                    <select id="serviceSelect" required>
+                                        <option value="">-- Pilih --</option>
+                                        <% services.forEach(s => { %>
+                                            <option value="<%= s.service_code %>"><%= s.service_name %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-globe"></i> Negara</label>
+                                    <select id="countrySelect" disabled required>
+                                        <option value="">Pilih layanan dulu</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-tower-cell"></i> Operator</label>
+                                    <select id="operatorSelect" disabled required>
+                                        <option value="">Pilih negara dulu</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" id="orderBtn" disabled>
+                                <i class="fas fa-cart-plus"></i> Pesan Sekarang
+                            </button>
+                        </form>
+                        <div id="orderResult" class="result-message"></div>
+                    </div>
+                </div>
+
+                <!-- Page: History -->
+                <div class="page" id="history-page">
+                    <div class="page-header">
+                        <h1>Riwayat Order</h1>
+                        <button class="btn-icon" id="refreshHistoryBtn"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="card table-card">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr><th>ID Order</th><th>Nomor</th><th>Layanan</th><th>Negara</th><th>Status</th><th>Harga</th><th>Tanggal</th></tr>
+                                </thead>
+                                <tbody id="historyBody">
+                                    <% orders.forEach(o => { %>
+                                    <tr class="status-<%= o.status %>">
+                                        <td><code><%= o.order_id %></code></td>
+                                        <td><%= o.phone_number || '-' %></td>
+                                        <td><%= o.service %></td>
+                                        <td><%= o.country %></td>
+                                        <td><span class="badge <%= o.status %>"><%= o.status.toUpperCase() %></span></td>
+                                        <td>Rp <%= (o.price || 0).toLocaleString() %></td>
+                                        <td><%= new Date(o.created_at).toLocaleString() %></td>
+                                    </tr>
+                                    <% }); if(orders.length===0){ %><tr><td colspan="7">Belum ada order</td></tr><% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page: Stats -->
+                <div class="page" id="stats-page">
+                    <div class="page-header">
+                        <h1>Statistik Bot</h1>
+                    </div>
+                    <div class="stats-grid" id="botStats">
+                        <div class="loading">Memuat...</div>
+                    </div>
+                </div>
+
+                <!-- Page: Deposit -->
+<div class="page" id="deposit-page">
+    <div class="page-header">
+        <h1><i class="fas fa-wallet"></i> Deposit Saldo</h1>
+        <p>Isi saldo Anda dengan QRIS</p>
+    </div>
+    <div class="card">
+        <div class="form-group">
+            <label><i class="fas fa-money-bill"></i> Nominal (min Rp1000)</label>
+            <input type="number" id="topupAmount" min="1000" step="1000" placeholder="Contoh: 50000">
+        </div>
+        <button class="btn btn-primary btn-block" id="topupBtn"><i class="fas fa-qrcode"></i> Generate QRIS</button>
+        <div id="topupResult" class="result-message"></div>
+    </div>
+<div class="card">
+    <div class="page-header" style="margin-top:0; padding-bottom:10px;">
+        <h2 style="font-size:1.2rem;"><i class="fas fa-history"></i> Riwayat Deposit</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table" id="depositHistoryTable">
+            <thead>
+                <tr><th>ID Deposit</th><th>Nominal</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="depositHistoryBody">
+                <tr><td colspan="5">Memuat...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+                <!-- Page: Settings -->
+                <div class="page" id="settings-page">
+                    <div class="page-header">
+                        <h1>Pengaturan</h1>
+                    </div>
+                    <div class="card">
+                        <div class="setting-item">
+                            <label>Notifikasi OTP via Telegram</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="notifToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                            <small>Kirim notifikasi ke Telegram saat OTP diterima</small>
+                        </div>
+                        <div class="setting-item">
+                            <label>Bahasa</label>
+                            <select id="languageSelect">
+                                <option value="id">Indonesia</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Tema</label>
+                            <select id="themeSelect">
+                                <option value="light">Light (Default)</option>
+                                <option value="dark">Dark Mode</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="saveSettingsBtn"><i class="fas fa-save"></i> Simpan Perubahan</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>
