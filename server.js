@@ -58,9 +58,9 @@ async function sendTelegramMessage(chatId, text) {
 // Kirim email OTP
 async function sendEmailOtp(toEmail, otp) {
   const mailOptions = {
-    from: `"NokOS Auth" <${process.env.GMAIL_USER}>`,
+    from: `"FazzPedia Auth" <${process.env.GMAIL_USER}>`,
     to: toEmail,
-    subject: 'Kode OTP Login NokOS',
+    subject: 'Kode OTP Login FazzPediaOtps',
     html: `
       <div style="font-family: Arial; max-width:500px; padding:20px; border:1px solid #e2e8f0; border-radius:16px;">
         <h2 style="color:#2563eb;">FazzPedia - Otps - Kode OTP</h2>
